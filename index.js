@@ -4,7 +4,6 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const { execFile } = require('child_process');
-
 const PORT = process.env.PORT || 3000;
 
 function derToPem(derBuffer) {
@@ -49,8 +48,23 @@ function fetchQUIC(host, port) {
 }
 
 const server = http.createServer(async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204);
+        res.end();
+        return;
+    }
+
     const parsedUrl = url.parse(req.url, true);
     
+    if (parsedUrl.pathname === '/health') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('OK');
+        return;
+    }
+
     if (parsedUrl.pathname === '/' || parsedUrl.pathname === '/index.html') {
         const filePath = path.join(__dirname, 'index.html');
         fs.readFile(filePath, (err, content) => {
