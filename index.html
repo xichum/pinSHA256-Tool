@@ -238,6 +238,8 @@
     </div>
 
     <script>
+        const BACKEND_URL = '';
+
         function extractTarget(input) {
             let str = input.trim();
             if (!str) return "";
@@ -355,7 +357,8 @@
             
             document.getElementById('btnFetch').textContent = '...';
             try {
-                let res = await fetch('/fetch?target=' + encodeURIComponent(target));
+                let base = BACKEND_URL ? BACKEND_URL.replace(/\/+$/, '') : '';
+                let res = await fetch(base + '/fetch?target=' + encodeURIComponent(target));
                 let data = await res.json();
                 if (data.pem) { 
                     ui.ta.value = data.pem; processData(data.pem); 
